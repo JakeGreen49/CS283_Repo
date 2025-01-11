@@ -35,10 +35,13 @@ Please provide answers to these questions using markdown notation and place them
 
 
 3. Please provide a link to the repository you are using for this class.
-https://github.com/JakeGreen49/CS283
+
+https://github.com/JakeGreen49/CS283_Repo
 
 4. Briefly describe what you want to get out of this class.
-I want to learn the core objectives in this class, and in doing so gain a deeper understanding of operating systems.
+
+I want to learn the core topics in this class, and in doing so gain a deeper understanding of operating systems.
 
 5. Briefly describe any concerns you might be having with being successful in this class (if any).
+
 I have no concerns.
