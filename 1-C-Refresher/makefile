@@ -16,5 +16,9 @@ $(TARGET): stringfun.c
 clean:
 	rm -f $(TARGET)
 
+# Perform a leak check with Valgrind
+lc:
+	valgrind --tool=memcheck --leak-check=yes --track-origins=yes ./stringfun -w "This is a long string"
+
 # Phony targets
 .PHONY: all clean

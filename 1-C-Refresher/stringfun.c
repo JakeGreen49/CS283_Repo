@@ -28,9 +28,15 @@ int setup_buff(char *buff, char *user_str, int len){
 		// Store the current character in variable c, replacing any tabs with a space
 		c = (*(user_str + i) == '\t') ? ' ' : *(user_str + i);
 
+		// Skip over a leading whitespace
+		if (i == 0 && c == ' ') {
+			i++;
+			continue;
+		}
+
 		// Continue if there is duplicate whitespace
 		if (i > 0) {
-			if (c == ' ' && *(buff + buff_len - 1) == ' ') {
+			if (c == ' ' && *(user_str + i - 1) == ' ') {
 				i++;
 				continue;
 			}
@@ -66,13 +72,67 @@ void usage(char *exename){
 }
 
 int count_words(char *buff, int len, int str_len){
-	int wordcount = 0;
+	int wordcount = 1;
 
 	for (int i=0; i < str_len; i++) {
 		if (*(buff + i) == ' ') wordcount++;
 	}
 
     return wordcount;
+}
+
+void string_reverse(char* buff, int len, int str_len) {
+	char temp;
+	char* user_str = malloc((sizeof(char) * str_len) + 1);
+
+	// Reverse the string
+	for (int i=0; i < str_len/2; i++) {
+		temp = *(buff + i);
+		
+		// Swap the last character with the first, second last with the second, etc.
+		*(buff + i) = *(buff + str_len - i - 1);
+		*(buff + str_len - i - 1) = temp;
+	}
+
+	// Parse the user string from the buffer
+	for (int i=0; i < str_len; i++) {
+		*(user_str + i) = *(buff + i);
+	}
+
+	// Add the null terminator so we can directly insert the string with printf
+	*(user_str + str_len) = '\0';
+
+	printf("Reversed String: %s\n", user_str);
+	free(user_str);
+}
+
+void print_words(char* buff, int len, int str_len) {
+	int char_count = 0;
+	int num_words = 1;
+
+	printf("Word Print\n----------\n1. ");
+	
+	for (int i=0; i < str_len; i++) {
+		// When we reach a space, print out the word count and increment the number of words
+		if (*(buff + i) == ' ') {
+			num_words++;
+			printf("%c(%d)\n%d. ", *(buff + i), char_count, num_words);
+			char_count = 0;
+		} 
+
+		// Print out the word character by character
+		else {
+			printf("%c", *(buff + i));
+			char_count++;
+		}
+	}
+
+	printf(" (%d)\n", char_count);
+}
+
+void replace_word(char* buff, int len, int str_len, char* old, char* new) {
+
+
 }
 
 //ADD OTHER HELPER FUNCTIONS HERE FOR OTHER REQUIRED PROGRAM OPTIONS
@@ -138,7 +198,19 @@ int main(int argc, char *argv[]){
 
         //TODO:  #5 Implement the other cases for 'r' and 'w' by extending
         //       the case statement options
-		
+		case 'h':
+			usage(argv[0]);
+			break;
+
+		case 'r':
+			string_reverse(buff, BUFFER_SZ, user_str_len);
+			break;
+
+		case 'w':
+			print_words(buff, BUFFER_SZ, user_str_len);
+			break;
+		case 'x':
+			//FIXME add in function
         default:
             usage(argv[0]);
             exit(1);
@@ -146,6 +218,7 @@ int main(int argc, char *argv[]){
 
     //TODO:  #6 Dont forget to free your buffer before exiting
     print_buff(buff,BUFFER_SZ);
+	free(buff);
     exit(0);
 }
 
