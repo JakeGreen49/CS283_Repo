@@ -567,8 +567,87 @@ void print_student(student_t *s){
  *            
  */
 int compress_db(int fd){
-    printf(M_NOT_IMPL);
-    return fd;
+	char* buffer = malloc(sizeof(char) * STUDENT_RECORD_SIZE);
+	int bytes_read = read(fd, buffer, STUDENT_RECORD_SIZE);
+	int new_fd;
+	student_t* student;
+
+	// Create the temporary database file
+	int temp_db = open_db(TMP_DB_FILE, false);
+	if (temp_db < 0) {
+		printf(M_ERR_DB_OPEN);
+		free(buffer);
+		return ERR_DB_FILE;
+	}
+
+	while (bytes_read != 0) {
+		// File read error
+		if (bytes_read < 0) {
+			printf(M_ERR_DB_READ);
+			free(buffer);
+			return ERR_DB_FILE;
+		}
+
+		// Matches with only non-deleted and non-empty records
+		if (memcmp(buffer, EMPTY_STRING, STUDENT_RECORD_SIZE) > 0) {
+			// Read the student info
+			student = read_student(buffer);
+
+			// Prepare the student info for output into the temp db
+			char* output = write_student(student->id, student->fname, student->lname, student->gpa);
+
+			// Go to the right location in the temp db
+			int bytes_jumped = lseek(temp_db, student->id * STUDENT_RECORD_SIZE, SEEK_SET);
+			if (bytes_jumped < 0) { // lseek error
+				printf(M_ERR_DB_READ);
+				free(buffer);
+				return ERR_DB_FILE;
+			}
+
+			// Write to the temp db
+			int bytes_written = write(temp_db, output, STUDENT_RECORD_SIZE);
+			if (bytes_written < 0) { // write error
+				printf(M_ERR_DB_WRITE);
+				free(buffer);
+				return ERR_DB_FILE;
+			}
+
+			// Free the student_t struct and the output from memory
+			free(student);
+			free(output);
+		}
+
+		// Increment the pointer in the original database
+		bytes_read = read(fd, buffer, STUDENT_RECORD_SIZE);
+	}
+
+	// Free the buffer from memory as it is no longer needed
+	free(buffer);
+
+	// Close the original file in order to write over it
+	int close_op = close(fd);
+	if (close_op < 0) { // error closing the file
+		printf(M_ERR_DB_CREATE);
+		return ERR_DB_FILE;
+	}
+
+	// Rename the temp file to the original database file
+	int rename_op = rename(TMP_DB_FILE, DB_FILE);
+	if (rename_op < 0) { // error renaming the file
+		printf(M_ERR_DB_CREATE);
+		return ERR_DB_FILE;
+	}
+
+	// Reopen the database file to return the file descriptor
+	new_fd = open_db(DB_FILE, false);
+	if (new_fd < 0) { // error in reopening the database file
+		printf(M_ERR_DB_OPEN);
+		return ERR_DB_FILE;
+	}
+
+	// All operations were a success
+	printf(M_DB_COMPRESSED_OK);
+	return fd;
 }
 
 
