@@ -17,11 +17,6 @@ int print_dragon() {
 	while (line_index < NUM_DRAGON_LINES) {
 		// For each line, parse out and print the required number of characters
 		while ((replacements = sscanf(line + offset, "%d%c", &i, &c)) > 0) {
-			// Error in scanning in part of the line
-			/*if (replacements < 0) {
-				printf("%d\t", replacements);
-				return -69;
-			}*/
 
 			// Print out the specified number of characters
 			for (int j=0; j < i; j++) {
@@ -104,7 +99,6 @@ int main()
 		printf(SH_PROMPT);
 
 		if (fgets(cmd_buff, SH_CMD_MAX, stdin) == NULL) {
-			//printf("command too long\n");
 			free(cmd_buff);
 			exit(ERR_CMD_OR_ARGS_TOO_BIG);
 		}
@@ -146,11 +140,11 @@ int main()
 		// The user exceeded the pipe limit
 		if (rc == ERR_TOO_MANY_COMMANDS) {
 			printf(CMD_ERR_PIPE_LIMIT, CMD_MAX);
+			free(cmd_buff); cmd_buff = NULL;
 			continue;
 		}
 		// If there was a different error in building the command list, exit with the error code
 		else if (rc < 0) {
-			//printf("error in building the command list");
 			free(cmd_buff);
 			free(cmd_list);
 			exit(rc);

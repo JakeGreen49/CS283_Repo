@@ -14,7 +14,6 @@ int make_struct(char* cmd_buff, command_t* command) {
 	while (cmd_buff[i] != ' ' && i < cmd_len) {
 		// Check if the command exceeds its maximum length
 		if (i > EXE_MAX) {
-			//printf("While loop error\n");
 			return(ERR_CMD_OR_ARGS_TOO_BIG);
 		}
 
@@ -25,7 +24,6 @@ int make_struct(char* cmd_buff, command_t* command) {
 
 	// Check if the arguments exceed their maximum length
 	if (cmd_len - i > ARG_MAX) {
-		//printf("arg length check\n");
 		return ERR_CMD_OR_ARGS_TOO_BIG;
 	}
 
@@ -125,19 +123,16 @@ int build_cmd_list(char *cmd_line, command_list_t *clist)
 			return ERR_TOO_MANY_COMMANDS;
 		}
 
-		//int i = 0;
 		command_t* command_struct = malloc(sizeof(command_t));
 
 		// First remove any extra spaces
 		char* parsed_command = remove_spaces(token);
-		//printf("parsed command = '%s'\n", parsed_command);
 
 		// Convert the parsed command into a command struct
 		int mk_struct = make_struct(parsed_command, command_struct);
 
 		// Check that everything went well making the command struct
 		if (mk_struct < 0) {
-			//printf("Struct error\n");
 			return mk_struct;
 		}
 
