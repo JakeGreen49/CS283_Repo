@@ -21,8 +21,8 @@ int print_dragon() {
 			// Print out the specified number of characters
 			for (int j=0; j < i; j++) {
 	
-				if (c == 's') printf(" ");
-				else if (c == 'a') printf("@");
+				if (c == 's') fputc(' ', stdout);
+				else if (c == 'a') fputc('@', stdout);
 				else if (c == 'p') fputc('%', stdout);
 
 			}
