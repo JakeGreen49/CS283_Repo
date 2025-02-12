@@ -175,7 +175,4 @@ int main()
 
 
 
-
-    printf(M_NOT_IMPL);
-    exit(EXIT_NOT_IMPL);
 }
